@@ -1,0 +1,21 @@
+# Setting up for dummies
+# This should help to really be able to get ready to run all the scripts.
+
+# 0) login to server:
+start VPN through FortiClient with tr10g082
+open any terminal or command prompt and type:
+ssh $USER@binfservms01.unibe.ch                                                 # replace $USER with your username
+type in your password and wait to log in.
+
+# 1) make or go to working-directory for this project:
+cd /data/users/$USER
+mkdir RNAseq
+cd RNAseq
+
+# 2) install SRA-toolkit
+mkdir software                                                                  # make new directory to store all software
+cd software
+wget --output-document sratoolkit.tar.gz http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
+tar -vxzf sratoolkit.tar.gz                                                     # unzip the just downloaded file
+
+# 3) install FastQC
