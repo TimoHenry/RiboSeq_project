@@ -18,7 +18,7 @@
 # the below will then run
 
 # ------------------------------------------------------------------------------
-# 01_Download data:       ------------------------------------------------------
+# 01_Download data:  -----------------------------------------------------------
 list_of_files=(SRR1944912 SRR1944913 SRR1944914 SRR1944921 SRR1944922 SRR1944923) # list of all file-names <- can change this to download other samples
 
 export PATH=$PATH:$PWD/sratoolkit.2.10.8-centos_linux64/bin                     # needed to append path to binaries PATH env variable <- may need to change this depending on your software!
@@ -33,17 +33,39 @@ do chmod gou+wrx $i; done                                                       
 for i in $(ls -d 01_Data/00_SRA_rawSeq/sra/*.sra);
 do fastq-dump --outdir 01_Data/01_fastq_rawSeq/ $i; done                        # convert to .fastq
 
-for i in $(ls -d 01_Data/01_fastq_rawSeq/*.fastq);                              # give all rights
+for i in $(ls -d 01_Data/01_fastq_rawSeq/*.fastq);                              # give all rights to new .fastq files
 do chmod gou+wrx $i; done
 
 
 # ------------------------------------------------------------------------------
 # 02_Quality control of raw sequences:  ----------------------------------------
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=2                                                       # allocate computational resources for the task
 #SBATCH --mem-per-cpu=1000M
+fastqc somefile.txt someotherfile.txt
+
+for i in $(ls -d 01_Data/01_fastq_rawSeq/*.fastq);
+do ./00_Software/FastQC/fastqc --outdir=/02_IntermOutput/01_rawQC/ $i;          # do FastQC analysis for each file & save to output-directory
+done
 
 
-# 03_Cleaning transcripts from 'junk'RNA
-# remove 'junk'-transcripts:
+# ------------------------------------------------------------------------------
+# 03_Clean transcripts from non-messenger RNA  ---------------------------------
+# First, fetch non-messenger transcript-sequences & combine into single file for mapping:
+
+
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=8000M
+
+
+# 04_Annotate mRNA
+# First, index
+
+# Then, map
+
+# Then, annotate
+
+
+# 05_Quality assessment
+# First, convert .sam to .bam list_of_files
+
+# Then, assess mRNA-reads quality with Ribo-seQC

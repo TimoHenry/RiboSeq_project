@@ -1,9 +1,13 @@
-# Setting up for dummies
-# This should help to really be able to get ready to run all the scripts.
+# December 2020, Timo Rey, UniFR - Switzerland
+
+# Hello!
+# This is a hopefully dummy-proof installation guide to get you ready to run the processing script provided alongside.
+# This should help to really be able to get ready and run the scripts.
 # <- hash-tags like this denote text-comments, type the other lines into the shell/prompt.
 
-# Good luck!
 
+# Good luck!
+# ******************************************************************************
 
 # 0) login to server:
 # start VPN through FortiClient with tr10g082
@@ -11,10 +15,12 @@
 ssh $USER@binfservms01.unibe.ch                                                 # replace $USER with your username
 # type in your password and wait to log in.
 
+
 # 1) make or go to working-directory for this project:
 cd /data/users/$USER
 mkdir RNAseq                                                                    # make a project folder
 cd RNAseq
+
 
 # 2) install SRA-toolkit
 mkdir 00_Software                                                               # make new directory to store all software
@@ -23,6 +29,7 @@ wget --output-document sratoolkit.tar.gz http://ftp-trace.ncbi.nlm.nih.gov/sra/s
 tar -vxzf sratoolkit.tar.gz                                                     # unzip the just downloaded file
 # can check by running: which fastq-dump
 
+
 # 3) install FastQC
 # note: jre is pre-installed on IBU-server <- you may need to install this before running FastQC
 wget --output-document fastqc_v0.11.9.zip https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip
@@ -30,14 +37,21 @@ unzip fastqc_v0.11.9.zip                                                        
 chmod 777 -R FastQC/                                                            # give rights to all files within FastQC directory
 # can check by running: fastqc --help
 
+
 # 4) install bowtie
-
-
+wget --output-document bowtie-1.3.0-linux-x86_64.zip https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.3.0/bowtie-1.3.0-linux-x86_64.zip/download
+unzip bowtie-1.3.0-linux-x86_64.zip
 
 
 # 5) install SAM-tools
 
+
+
+
+
 # 6) install Ribo-seQC
+
+
 
 
 
