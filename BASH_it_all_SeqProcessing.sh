@@ -50,22 +50,36 @@ done
 
 # ------------------------------------------------------------------------------
 # 03_Clean transcripts from non-messenger RNA  ---------------------------------
-# First, fetch non-messenger transcript-sequences & combine into single file for mapping:
-
+# First, fetch non-messenger transcript-sequences & combine into single file for mapping
+# then, annotate
+# build indeces:
+bowtie -build rRNA.fa rRNA
+bowtie -build R64-1-1*
 
 #SBATCH --cpus-per-task=4
-#SBATCH --mem-per-cpu=8000M
+#SBATCH --mem-per-cpu=80000M
+bowtie -t 4 ./... $i --un *_clean.fastq 2>> logfile.txt
+use toplevel
 
 
 # 04_Annotate mRNA
-# First, index
 
 # Then, map
 
 # Then, annotate
+#from Melina:
+module add UHTS/Aligner/bowtie/1.2.0
+bowtie -p 4 RNA_index SRR1944912.fastq --un SRR1944912_no_RNA.fastq 2> my_errors.txt
 
 
 # 05_Quality assessment
 # First, convert .sam to .bam list_of_files
 
 # Then, assess mRNA-reads quality with Ribo-seQC
+
+
+
+
+#from Melina:
+
+featureCounts -t exon -g gene_id -a Saccharomyces_cerevisiae.R64-1-1.101.gtf   -o counts.txt SRR1944912_genome_sorted.bam SRR1944913_genome_sorted.bam SRR1944914_genome_sorted.bam SRR1944921_genome_sorted.bam SRR1944922_genome_sorted.bam SRR1944923_genome_sorted.bam
