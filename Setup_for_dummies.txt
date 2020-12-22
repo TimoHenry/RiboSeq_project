@@ -1,21 +1,52 @@
 # Setting up for dummies
 # This should help to really be able to get ready to run all the scripts.
+# <- hash-tags like this denote text-comments, type the other lines into the shell/prompt.
+
+# Good luck!
+
 
 # 0) login to server:
-start VPN through FortiClient with tr10g082
-open any terminal or command prompt and type:
+# start VPN through FortiClient with tr10g082
+# open any terminal or command prompt and type:
 ssh $USER@binfservms01.unibe.ch                                                 # replace $USER with your username
-type in your password and wait to log in.
+# type in your password and wait to log in.
 
 # 1) make or go to working-directory for this project:
 cd /data/users/$USER
-mkdir RNAseq
+mkdir RNAseq                                                                    # make a project folder
 cd RNAseq
 
 # 2) install SRA-toolkit
-mkdir software                                                                  # make new directory to store all software
-cd software
+mkdir 00_Software                                                               # make new directory to store all software
+cd software                                                                     # go to that directory
 wget --output-document sratoolkit.tar.gz http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
 tar -vxzf sratoolkit.tar.gz                                                     # unzip the just downloaded file
 
 # 3) install FastQC
+
+
+
+
+# 4) install bowtie
+
+
+
+
+#5_a) download the processing script from github
+cd /data/users/$USER/RNAseq/
+
+# https://github.com/TimoHenry/RiboSeq_project/blob/main/BASH_it_all_SeqProcessing.sh
+
+#5_B) clone the project from github                                             # you could also clone, or fork the underlying github repository and contribute to its extension.
+git clone https://github.com/TimoHenry/RiboSeq_project.git                      # but if you're already into that, you probably would not need this 'dummies guide' for downloading software...
+
+#6) Configure sra-toolkit before use
+# To enable SRA-tools, it needs to be configured as described here:
+# https://github.com/ncbi/sra-tools/wiki/03.-Quick-Toolkit-Configuration
+# note: you must give the path, to run vdb
+./00_Software/sratoolkit.2.10.8.centos_linux64/bin/vdb-config -i                # if you are using the same directory-layout, run it like this.
+# hint: specify the output directory as this: /data/users/$USER/RNAseq/01_Data/00_SRA_rawSeq
+
+#7) run the processing script.
+# type and run:
+./BASH_it_all_SeqProcessing.sh                                                  # the '.' tells to look for the file in the current directory. This can be modified to any other location.
