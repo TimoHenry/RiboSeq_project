@@ -30,12 +30,16 @@ tar -vxzf sratoolkit.tar.gz                                                     
 # can check by running: which fastq-dump
 
 
+
+
 # 3) install FastQC
 # note: jre is pre-installed on IBU-server <- you may need to install this before running FastQC
 wget --output-document fastqc_v0.11.9.zip https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip
 unzip fastqc_v0.11.9.zip                                                        # unzips & creates new directory "FastQC"
 chmod 777 -R FastQC/                                                            # give rights to all files within FastQC directory
 # can check by running: fastqc --help
+
+
 
 
 # 4) install bowtie
@@ -45,28 +49,45 @@ unzip bowtie-1.3.0-linux-x86_64.zip
 # 4_2) manually download reference sequences for mapping
 # 4_2_1) rRNA, snRNA, snoRNA from ensembl:
 # go to: http://www.ensembl.org/biomart/martview/46b9d0f7f0e8858921c12f0e1b75b019?VIRTUALSCHEMANAME=default&ATTRIBUTES=scerevisiae_gene_ensembl.default.sequences.ensembl_gene_id|scerevisiae_gene_ensembl.default.sequences.ensembl_transcript_id|scerevisiae_gene_ensembl.default.sequences.gene_exon_intron|scerevisiae_gene_ensembl.default.sequences.external_gene_name&FILTERS=scerevisiae_gene_ensembl.default.filters.transcript_biotype."rRNA,snoRNA,snRNA"&VISIBLEPANEL=resultspanel
-
 # download as FASTA
 # 4_2_2) tRNA from Genomic tRNA database:
 wget --output-document tRNA_Refs.fa http://gtrnadb.ucsc.edu/genomes/eukaryota/Scere3/sacCer3-mature-tRNAs.fa
 # 4_2_3) rRNA from ensembl:
 # got to: https://www.ncbi.nlm.nih.gov/nuccore
 # and type the following into the search-field: biomol_rRNA[prop] AND "Saccharomyces cerevisiae"[Organism]
-# download all as FASTA
+# download all as FASTA (see small feature "send to" towards top or bottom of the page)
 4_2_4) upload to server
-# combine the three lists and upload to server (got to directory and type:)
+# combine the three lists and upload to server (on your computer, go to directory and type:)
 scp ./* $USER@binfservms01.unibe.ch:/data/users/$USER/RNAseq/01_Data/02_rtsRNA_refSeq # secure-copies all files in this directory to the server (replace $USER with your username)
 
 4_2_5) download reference annotations:
 # for reference transcriptome, go to: http://www.ensembl.org/biomart/martview/4e9648722de7cb0da23cf319e08eb5e6?VIRTUALSCHEMANAME=default&ATTRIBUTES=scerevisiae_gene_ensembl.default.sequences.ensembl_gene_id|scerevisiae_gene_ensembl.default.sequences.ensembl_transcript_id|scerevisiae_gene_ensembl.default.sequences.coding|scerevisiae_gene_ensembl.default.sequences.external_gene_name|scerevisiae_gene_ensembl.default.sequences.upstream_flank."18"|scerevisiae_gene_ensembl.default.sequences.downstream_flank."18"&FILTERS=scerevisiae_gene_ensembl.default.filters.transcript_biotype."protein_coding"&VISIBLEPANEL=resultspanel
 # then upload with scp as above.
+
 # for reference genome, type:
 wget --output-document yeastGenome_ref.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa.gz
 # for gtf of genome, type:
 wget --output-document yeastGenome_refGTF.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.101.gtf.gz
 
 
-# 5) install SAM-tools                                                          # more info at http://www.htslib.org/download
+# 5) prepare indeces for bowtie-mapping:                                        # bowtie-build depends on python3, which cannot be installed on our server. Hence, the indeces must be built on your local machine, and then uploaded to the server for mapping
+# 5_1) junkRNA-indexing:
+bowtie-build unwantedRNA.txt all_undesiredRNA_Refs
+scp ./*ebwt $USER@binfservms01.unibe.ch:/data/users/$USER/RNAseq/01_Data/02_rtsRNA_refSeq/indexes/
+scp ./*ebwt trey@binfservms01.unibe.ch:/data/users/$USER/RNAseq/01_Data/02_rtsRNA_refSeq/indexes/
+
+# 5_2) transcriptome Annotations indexing:
+bowtie-build mart_exportTranscriptome.txt transcriptome
+scp ./transcriptome* trey@binfservms01.unibe.ch:/data/users/trey/RNAseq/01_Data/03_Transcrpt_refAnnot/
+
+# 5_3) genome Annotations indexing:
+bowtie-build Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa R64_genome
+scp ./R64_genome* $USER@binfservms01.unibe.ch:/data/users/$USER/RNAseq/01_Data/04_Genome_refAnnot/
+
+
+
+
+# 6) install SAM-tools                                                          # more info at http://www.htslib.org/download
 wget --output-document samtools-1.11.tar.bz2 https://sourceforge.net/projects/samtools/files/samtools/1.11/samtools-1.11.tar.bz2/download
 tar -xf samtools-1.11.tar.bz2
 cd samtools-1.11
@@ -76,31 +97,31 @@ make
 make install
 export PATH=$PWD/../SAMtool/bin:$PATH                                           # for convenience
 
+# check out: http://quinlanlab.org/tutorials/samtools/samtools.html
 
 
 
-
-# 6) install Ribo-seQC
-
-
+# 7) install Ribo-seQC                                                          # Ribo-seQC is an R-package. R-software must thus be installed and the Ribo-seQC package downloaded.
+#check out: https://htmlpreview.github.io/?https://github.com/lcalviell/Ribo-seQC/blob/master/RiboseQC.html
 
 
 
-#6_A) download the processing script from github
+#8_A) download the processing script from github
 cd /data/users/$USER/RNAseq/
 
 # https://github.com/TimoHenry/RiboSeq_project/blob/main/BASH_it_all_SeqProcessing.sh
 
-#6_B) clone the project from github                                             # you could also clone, or fork the underlying github repository and contribute to its extension.
+#8_B) clone the project from github                                             # you could also clone, or fork the underlying github repository and contribute to its extension.
 git clone https://github.com/TimoHenry/RiboSeq_project.git                      # but if you're already into that, you probably would not need this 'dummies guide' for downloading software...
 
-#7) Configure sra-toolkit before use
+#9) Configure sra-toolkit before use
 # To enable SRA-tools, it needs to be configured as described here:             # on our server, this needs to be re-done every time one logs out [tuple is re-set to its original value]
 # https://github.com/ncbi/sra-tools/wiki/03.-Quick-Toolkit-Configuration
 # note: you must give the path, to run vdb
 ./00_Software/sratoolkit.2.10.8.centos_linux64/bin/vdb-config -i                # if you are using the same directory-layout, run it like this.
 # hint: specify the output directory as this: /data/users/$USER/RNAseq/01_Data/00_SRA_rawSeq
 
-#8) run the processing script.
+
+#10) run the processing script.
 # type and run:
 ./BASH_it_all_SeqProcessing.sh                                                  # the '.' tells to look for the file in the current directory. This can be modified to any other location.
