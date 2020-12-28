@@ -52,10 +52,14 @@ done
 # 03_Clean transcripts from non-messenger RNA  ---------------------------------
 # First, fetch non-messenger transcript-sequences & combine into single file for mapping
 # then, index them
+bowtie-build all_undesiredRNA_Refs.txt all_undesiredRNA_Refs.txt
 # then, download the fastq files from server:
 scp trey@binfservms01.unibe.ch:/data/users/trey/RNAseq/01_Data/01_fastq_rawSeq/ .
-
+bowtie -t
 # then, filter the sequences with the indexed unwanted RNA:
+
+
+
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=80000M
 
@@ -75,12 +79,25 @@ bowtie -p 4 RNA_index SRR1944912.fastq --un SRR1944912_no_RNA.fastq 2> my_errors
 # ------------------------------------------------------------------------------
 # 05_Quality assessment  -------------------------------------------------------
 # First, convert .sam to .bam list_of_files
+# -> go to SAMtool/bin/, then, for all transcriptome-annotated sam files:
+./samtools view -S -b ../../04_bowtie_transcriptome/SRR19449*-transAnnot.sam > ../../05_BAM_out/SRR19449*_transcriptome.bam
+# for all genome-annotated sam files:
+./samtools view -S -b ../../04_bowtie_transcriptome/SRR19449*-GenAnnot.sam > ../../05_BAM_out/SRR19449*_genome.bam
+# note: -S => expects .sam input (vs. default .bam); -b produces .bam output; default is STDOUT => need '>' operator
+
+# sort genome.bam files:
+./samtools sort ../../05_BAM_out/SRR1944912_genome.bam -o ../../05_BAM_out/SRR1944912_genome.sorted.bam
+
 
 # Then, assess mRNA-reads quality with Ribo-seQC
+prepare_annotation_files(annotation_directory = ".",
+                         twobit_file = "test_human.2bit",
+                         gtf_file = "test_human.gtf",scientific_name = "Human.test",
+                         annotation_name = "genc25_22M",export_bed_tables_TxDb = F,forge_BSgenome = T,create_TxDb = T)
+
 
 
 
 
 #from Melina:
-
 featureCounts -t exon -g gene_id -a Saccharomyces_cerevisiae.R64-1-1.101.gtf   -o counts.txt SRR1944912_genome_sorted.bam SRR1944913_genome_sorted.bam SRR1944914_genome_sorted.bam SRR1944921_genome_sorted.bam SRR1944922_genome_sorted.bam SRR1944923_genome_sorted.bam

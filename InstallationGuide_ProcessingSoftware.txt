@@ -95,7 +95,7 @@ mkdir ./../SAMtool
 ./configure --prefix=$PWD/../SAMtool
 make
 make install
-export PATH=$PWD/../SAMtool/bin:$PATH                                           # for convenience
+# export PATH=$PWD/../SAMtool/bin:$PATH                                           # for convenience -> otherwise, just run
 
 # check out: http://quinlanlab.org/tutorials/samtools/samtools.html
 
@@ -103,6 +103,19 @@ export PATH=$PWD/../SAMtool/bin:$PATH                                           
 
 # 7) install Ribo-seQC                                                          # Ribo-seQC is an R-package. R-software must thus be installed and the Ribo-seQC package downloaded.
 #check out: https://htmlpreview.github.io/?https://github.com/lcalviell/Ribo-seQC/blob/master/RiboseQC.html
+# need to install R version < 4.0 -> R v.3.6.3 installed on personal Windows & then run it.
+# Download RiboseQC library inside R:
+install.packages("devtools")
+library("devtools")
+install_github(repo = "lcalviell/Ribo-seQC")
+library("RiboseQC")
+
+# => 2 steps: 1) ?prepare_annotation_files <- type this in R-terminal & it will direct you to the documentation
+# or, check out: http://127.0.0.1:28535/library/RiboseQC/html/prepare_annotation_files.html
+# for this, will need .gtf file (downloaded above) as well as .2bit as described here: https://genome.ucsc.edu/goldenpath/help/twoBit.html
+# yeast genome .2bit, can be downloaded here: http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/
+wget --output-document yeastGenome.2bit http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.2bit
+wget --output-document yeastGenome.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.101.gtf.gz
 
 
 
