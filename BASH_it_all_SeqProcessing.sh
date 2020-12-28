@@ -89,14 +89,18 @@ bowtie -p 4 RNA_index SRR1944912.fastq --un SRR1944912_no_RNA.fastq 2> my_errors
 ./samtools sort ../../05_BAM_out/SRR1944912_genome.bam -o ../../05_BAM_out/SRR1944912_genome.sorted.bam
 
 
-# Then, assess mRNA-reads quality with Ribo-seQC
-prepare_annotation_files(annotation_directory = ".",
-                         twobit_file = "test_human.2bit",
-                         gtf_file = "test_human.gtf",scientific_name = "Human.test",
-                         annotation_name = "genc25_22M",export_bed_tables_TxDb = F,forge_BSgenome = T,create_TxDb = T)
+# Then, assess mRNA-reads quality with RiboseQC in R
+# step 1) prepare annotation files:
+#prepare_annotation_files(annotation_directory = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC",                # target directory to contain the output files
+#                         twobit_file = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC\yeastGenome.2bit",
+#                         gtf_file = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC\yeastGenome.gtf", # files to build reference from
+#                         scientific_name = "Saccharomyces.cerevisiae",          # organism
+#                         annotation_name = "yeast_RiboseQC",                    # name to give to annotation used
+#                         export_bed_tables_TxDb = F, forge_BSgenome = T, create_TxDb = T)
+# run the following one-liner:
+prepare_annotation_files(annotation_directory = "C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC", twobit_file = "C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.2bit", gtf_file = "C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf", scientific_name = "Saccharomyces.cerevisiae", annotation_name = "yeast_RiboseQC", export_bed_tables_TxDb = F, forge_BSgenome = T, create_TxDb = T)
 
-
-
+# step 2) perform analysis:                                                     # see documentation here: http://127.0.0.1:28535/library/RiboseQC/html/RiboseQC_analysis.html
 
 
 #from Melina:

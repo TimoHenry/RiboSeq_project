@@ -116,7 +116,8 @@ library("RiboseQC")
 # yeast genome .2bit, can be downloaded here: http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/
 wget --output-document yeastGenome.2bit http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.2bit
 wget --output-document yeastGenome.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.101.gtf.gz
-
+# copy these files to local Windows machine to use them in R on windows:
+cp /m
 
 
 #8_A) download the processing script from github
