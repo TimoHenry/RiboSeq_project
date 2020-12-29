@@ -98,10 +98,27 @@ bowtie -p 4 RNA_index SRR1944912.fastq --un SRR1944912_no_RNA.fastq 2> my_errors
 #                         annotation_name = "yeast_RiboseQC",                    # name to give to annotation used
 #                         export_bed_tables_TxDb = F, forge_BSgenome = T, create_TxDb = T)
 # run the following one-liner:
-prepare_annotation_files(annotation_directory = "C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC", twobit_file = "C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.2bit", gtf_file = "C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf", scientific_name = "Saccharomyces.cerevisiae", annotation_name = "yeast_RiboseQC", export_bed_tables_TxDb = F, forge_BSgenome = T, create_TxDb = T)
+prepare_annotation_files(annotation_directory="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC",twobit_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.2bit",gtf_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf",scientific_name="Saccharomyces.cerevisiae",annotation_name="yeast_RiboseQC",export_bed_tables_TxDb=T,forge_BSgenome=T,create_TxDb=T)
+
+load_annotation( 'C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf_Rannot' )
+# From Melina:
+featureCounts -t exon -g gene_id -a Saccharomyces_cerevisiae.R64-1-1.101.gtf   -o counts.txt SRR1944912_genome_sorted.bam SRR1944913_genome_sorted.bam SRR1944914_genome_sorted.bam SRR1944921_genome_sorted.bam SRR1944922_genome_sorted.bam SRR1944923_genome_sorted.bam
 
 # step 2) perform analysis:                                                     # see documentation here: http://127.0.0.1:28535/library/RiboseQC/html/RiboseQC_analysis.html
+# for single sample, in R type:
+
+RiboseQC_analysis(annotation_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC3/yeastGenome.gtf_Rannot",
+bam_files = c("C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944912_genome.sorted.bam"),
+fast_mode = T,report_file ="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/RiboseQC_SRR194412.html",
+sample_names=c("SRR1944912"),dest_names = c("SRR1944912"),write_tmp_files = T)
 
 
-#from Melina:
-featureCounts -t exon -g gene_id -a Saccharomyces_cerevisiae.R64-1-1.101.gtf   -o counts.txt SRR1944912_genome_sorted.bam SRR1944913_genome_sorted.bam SRR1944914_genome_sorted.bam SRR1944921_genome_sorted.bam SRR1944922_genome_sorted.bam SRR1944923_genome_sorted.bam
+# for multiple samples, in R type:
+bam_filepath <- c("C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944912_genome.sorted.bam",
+"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944913_genome.sorted.bam",
+"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944914_genome.sorted.bam",
+"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944921_genome.sorted.bam",
+"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944922_genome.sorted.bam",
+"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944923_genome.sorted.bam")
+bam_names <- c("SRR1944912","SRR1944913","SRR1944914","SRR1944921","SRR1944922","SRR1944923")
+RiboseQC_analysis(annotation_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf_Rannot", bam_files = bam_filepath, fast_mode = T, report_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/allYeast_riboseQC.html", sample_names=bam_names, dest_names=bam_names, write_tmp_files=T)
