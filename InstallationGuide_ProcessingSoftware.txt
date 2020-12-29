@@ -128,7 +128,7 @@ cp yeastGenome.* /mnt/c/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/
 # go to 05_BAM_out directory & copy all sorted.bam files to local computer
 cp *.sorted.bam /mnt/c/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/
 
-
+need to install pandoc as described here: https://pandoc.org/installing.html
 
 #8_A) download the processing script from github
 cd /data/users/$USER/RNAseq/
