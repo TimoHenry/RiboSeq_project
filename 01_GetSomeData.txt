@@ -1,0 +1,48 @@
+# December 2020, Timo Rey, UniFR - Switzerland
+
+# Hello & welcome!
+# These scripts are intended to hopefully be dummy-proof installation guides.
+# But in case you get stuck, it is very likely because I forgot to add something
+# -> let me know so I can update it!
+
+# p.s.: <- hash-tags like this denote text-comments, type the other lines into the shell/prompt/terminal..
+
+# Good luck!
+# ******************************************************************************
+
+# 0) Set-up:
+# Clone this repository somewhere into a project-directory (NOTE: I did this on the cluster, but you can also do it in your local Ubuntu)
+# It should already give you a basic folder-structure.
+git clone https://github.com/TimoHenry/RiboSeq_project.git
+
+# 1) Install SRA-toolkit:                                                       # software to download & handle sequencing data.
+cd 000_Software                                                                 # go to directory which will harbour your software for this project
+wget --output-document sratoolkit.tar.gz http://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
+tar -vxzf sratoolkit.tar.gz                                                     # unzip the just downloaded file
+which fastq-dump                                                                # will show whether it worked.
+
+
+# 2) Configure sra-toolkit before use
+# To enable SRA-tools, it needs to be configured as described here:             # on our server, this needs to be re-done every time one logs out
+# https://github.com/ncbi/sra-tools/wiki/03.-Quick-Toolkit-Configuration
+# note: you must give the path, to run vdb
+./000_Software/sratoolkit.2.10.8.centos_linux64/bin/vdb-config -i
+# hint: on our servers, specify the output directory as this: /data/users/$USER/RNAseq/001_Data/00_SRA_rawSeq
+
+
+# 3) Download data:
+list_of_files=(SRR1944912 SRR1944913 SRR1944914 SRR1944921 SRR1944922 SRR1944923) # list of all file-names <- can change this to download other samples
+
+export PATH=$PATH:$PWD/sratoolkit.2.10.8-centos_linux64/bin                     # needed to append path to binaries PATH env variable <- may need to change this depending on your OS!
+for i in ${list_of_files[@]};                                                   # for every name in the list
+do prefetch $i; done                                                            # fetch raw sequences in .sra format
+
+# 04) Convert to .fastq format:
+for i in $(ls -d 001_Data/00_SRA_rawSeq/sra/*.sra);                              # find all files with extension .sra
+do chmod gou+wrx $i; done                                                       # give read write and execution rights to these files
+
+for i in $(ls -d 001_Data/00_SRA_rawSeq/sra/*.sra);
+do fastq-dump --outdir 01_Data/01_fastq_rawSeq/ $i; done                        # convert to .fastq
+
+for i in $(ls -d 001_Data/01_fastq_rawSeq/*.fastq);                              # give all rights to new .fastq files
+do chmod gou+wrx $i; done

@@ -1,0 +1,24 @@
+
+# go to directory with .sam files (04_bowtie_transcriptome)
+# activate sam-tools: export PATH=$PWD/../../00_Software/SAMtool/bin:$PATH                                           # for convenience -> otherwise, just run
+for i in *-transAnnot.sam ; do echo $i; a=${i/\-transAnnot.sam/};
+samtools view $i | awk '$3!="*"{hash[$3]++}END{for(i in hash){print "'$a'\t"i"\t"hash[i]}}' >>transcriptome_counts.txt;
+done;
+
+samtools view $i | awk '$3!="*"{hash[$3]++}END{for(i in hash){print "'$a'\t"i"\t"hash[i]}}' >>count_table.txt; done;
+samtools view $i | awk '$3!="*"{hash[$3]++}END{for(i in hash){print "'$a'\t"i"\t"hash[i]}}' >>transcriptome_counts.txt; done;
+# => creates count_table.txt
+
+
+
+
+
+# 1) Install DESeq2:
+# start R-Studio with R-version > 4.x & type:
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("DESeq2")
+
+# for info: browseVignettes("DESeq2")

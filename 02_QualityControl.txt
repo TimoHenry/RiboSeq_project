@@ -1,0 +1,80 @@
+# December 2020, Timo Rey, UniFR - Switzerland
+
+# Hello & welcome again!
+# You know the drill...
+
+# Good luck!
+# ******************************************************************************
+
+# 1) Install FastQC:
+# note: jre is pre-installed on our server <- you may need to install this before running FastQC
+cd 000_Software                                                                 # go to directory which will harbour your software for this project
+wget --output-document fastqc_v0.11.9.zip https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip
+unzip fastqc_v0.11.9.zip                                                        # unzips & creates new directory "FastQC"
+chmod 777 -R FastQC/                                                            # give rights to all files within FastQC directory
+fastqc --help                                                                   # will show whether it worked.
+
+
+# 2) Quality control of raw sequences:
+# You can copy-paste the following lines into a bash-script, called "yourBASHname.sh" <- you need to remove the #-notes though..
+
+#!/usr/bin/env bash                                                             # Beginning of a bash-script
+#SBATCH --cpus-per-task=2                                                       # Allocate computational resources for the task
+#SBATCH --mem-per-cpu=1000M
+for i in $(ls -d 001_Data/01_fastq_rawSeq/*.fastq);                             # for every .fastq file
+do ./00_Software/FastQC/fastqc --outdir=/02_IntermOutput/01_rawQC/ $i;          # do FastQC analysis save to output-directory
+done
+
+# execute the script:
+./yourBASHname.sh                                                               # the '.' tells to look for the file in the current directory. This can be modified to any other location.
+
+
+# 3) Quality control of clean sequences:
+# do the same as above, but specify the new input-files -> replace "*.fastq" with
+
+
+# 4) Quality control of annotations sequences:
+
+
+# 6) install SAM-tools                                                          # more info at http://www.htslib.org/download
+wget --output-document samtools-1.11.tar.bz2 https://sourceforge.net/projects/samtools/files/samtools/1.11/samtools-1.11.tar.bz2/download
+tar -xf samtools-1.11.tar.bz2
+cd samtools-1.11
+mkdir ./../SAMtool
+./configure --prefix=$PWD/../SAMtool
+make
+make install
+# export PATH=$PWD/../SAMtool/bin:$PATH                                           # for convenience -> otherwise, just run
+
+# check out: http://quinlanlab.org/tutorials/samtools/samtools.html
+
+
+
+# 7) install Ribo-seQC                                                          # Ribo-seQC is an R-package. R-software must thus be installed and the Ribo-seQC package downloaded.
+#check out: https://htmlpreview.github.io/?https://github.com/lcalviell/Ribo-seQC/blob/master/RiboseQC.html
+# need to install R version < 4.0 -> R v.3.6.3 installed on personal Windows & then run it.
+# install Rtools according to R-version by downloading from here: https://cran.r-project.org/bin/windows/Rtools/history.html
+# check if Rtools is available:
+install.packages("pkgbuild")
+library("pkgbuild")
+find_rtools() # should return TRUE
+
+# Download RiboseQC library inside R:
+install.packages("devtools")
+library("devtools")
+install_github(repo = "lcalviell/Ribo-seQC")
+library("RiboseQC")
+
+# => 2 steps: 1) ?prepare_annotation_files <- type this in R-terminal & it will direct you to the documentation
+# or, check out: http://127.0.0.1:28535/library/RiboseQC/html/prepare_annotation_files.html
+# for this, will need .gtf file (downloaded above) as well as .2bit as described here: https://genome.ucsc.edu/goldenpath/help/twoBit.html
+# yeast genome .2bit, can be downloaded here: http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/
+wget --output-document yeastGenome.2bit http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.2bit
+wget --output-document yeastGenome.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.101.gtf.gz
+gunzip yeastGenome.gtf.gz
+# copy these files to local Windows machine to use them in R on windows:
+cp yeastGenome.* /mnt/c/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/
+# go to 05_BAM_out directory & copy all sorted.bam files to local computer
+cp *.sorted.bam /mnt/c/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/
+
+need to install pandoc as described here: https://pandoc.org/installing.html
