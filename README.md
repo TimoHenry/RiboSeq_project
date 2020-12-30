@@ -12,23 +12,31 @@ Good luck!
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ****************************************************    I) Processing     ****************************************************
 
-Step 1) Download the data
+**Step 1) Download the data
 
-Step 1.2) Convert data (to .fastq format)
+Follow instructions in 01_GetSomeData.txt
 
-Step 2) Quality Assessment of raw sequencing data
+**Step 1.2) Convert data (to .fastq format)
 
-Step 3) Remove 'uninteresting' sequences
+Follow instructions in 01_GetSomeData.txt
 
-Step 4) Quality Assessment of cleaned sequencing data
+**Step 2) Quality Assessment of raw sequencing data
 
+Follow instructions in 02_QualityControls.txt
 
-Step 5) Map sequencing reads to reference genome and transcriptome to obtain annotated (with biological attributes) reads
+**Step 3) Remove 'uninteresting' sequences
 
-Step 6) Quality Assessement of annotated sequencing data
+**Step 4) Quality Assessment of cleaned sequencing data
 
+Follow instructions in 02_QualityControls.txt
 
-Output I)                Processed reads, ready for analysis: Annotated sequencing data for each sample.
+**Step 5) Map sequencing reads to reference genome and transcriptome to obtain annotated (with biological attributes) reads
+
+**Step 6) Quality Assessement of annotated sequencing data
+
+Follow instructions in 02_QualityControls.txt
+
+**Output I)                Processed reads, ready for analysis: Annotated sequencing data for each sample.
 
 **********************************************    II) Analysis     ************************************************
 
