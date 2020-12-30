@@ -26,11 +26,15 @@ Follow instructions in 02_QualityControls.txt (point 1 & 2)
 
 **Step 3) Remove 'uninteresting' sequences
 
+Follow instructions in 03_ReadCleaning
+
 **Step 4) Quality Assessment of cleaned sequencing data
 
 Follow instructions in 02_QualityControls.txt (point 3)
 
 **Step 5) Map sequencing reads to reference genome and transcriptome to obtain annotated (with biological attributes) reads
+
+Follow instructions in 04_ReadAnnotation
 
 **Step 6) Quality Assessement of annotated sequencing data
 
