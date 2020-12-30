@@ -38,7 +38,7 @@ Follow instructions in 04_ReadAnnotation
 
 **Step 6) Quality Assessement of annotated sequencing data
 
-Follow instructions in 02_QualityControls.txt (point 4)
+Follow instructions in 02_QualityControls.txt (point 4 - 8)
 
 **Output I)                Processed reads, ready for analysis: Annotated sequencing data for each sample.
 
