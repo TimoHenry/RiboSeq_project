@@ -22,19 +22,19 @@ Follow instructions in 01_GetSomeData.txt
 
 **Step 2) Quality Assessment of raw sequencing data
 
-Follow instructions in 02_QualityControls.txt
+Follow instructions in 02_QualityControls.txt (point 1 & 2)
 
 **Step 3) Remove 'uninteresting' sequences
 
 **Step 4) Quality Assessment of cleaned sequencing data
 
-Follow instructions in 02_QualityControls.txt
+Follow instructions in 02_QualityControls.txt (point 3)
 
 **Step 5) Map sequencing reads to reference genome and transcriptome to obtain annotated (with biological attributes) reads
 
 **Step 6) Quality Assessement of annotated sequencing data
 
-Follow instructions in 02_QualityControls.txt
+Follow instructions in 02_QualityControls.txt (point 4)
 
 **Output I)                Processed reads, ready for analysis: Annotated sequencing data for each sample.
 
