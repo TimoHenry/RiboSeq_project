@@ -11,6 +11,7 @@ Good luck!
                                                                                    
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ****************************************************    I) Processing     ****************************************************
+
 Step 1) Download the data
 
 Step 1.2) Convert data (to .fastq format)
@@ -30,6 +31,7 @@ Step 6) Quality Assessement of annotated sequencing data
 Output I)                Processed reads, ready for analysis: Annotated sequencing data for each sample.
 
 **********************************************    II) Analysis     ************************************************
+
 Step 7) Compare samples, and identify differences
 
 Step 8) Assess biological meaning of differences
