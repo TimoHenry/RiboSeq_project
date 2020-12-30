@@ -7,10 +7,10 @@ In this repo, you should find a step-by-step guide to download and install neces
 
 Below you will find an outline of steps and filenames for detailed instructions to execute each step.
 Good luck!  
-                                                                                    (p.s.: do not hesitate to ask, in case you're stuck somewhere, it is like I was stuck there too ;-) )
+                                                                                 (p.s.: do not hesitate to ask, in case you're stuck somewhere, it is likely I was stuck there too ;-) )
                                                                                    
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-************************************************    I) Processing     ************************************************
+****************************************************    I) Processing     ****************************************************
 Step 1) Download the data
 
 Step 1.2) Convert data (to .fastq format)
