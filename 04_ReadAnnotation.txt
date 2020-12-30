@@ -1,4 +1,10 @@
+# December 2020, Timo Rey, UniFR - Switzerland
 
+# Hello & welcome again!
+# You know the drill... Here we'll annotate the reads, so we actually know what they are.
+
+# Good luck!
+# ******************************************************************************
 
 # 04_Annotate mRNA
 # 04_1 index reference annotations:

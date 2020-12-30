@@ -1,24 +1,33 @@
+# December 2020, Timo Rey, UniFR - Switzerland
 
-# go to directory with .sam files (04_bowtie_transcriptome)
-# activate sam-tools: export PATH=$PWD/../../00_Software/SAMtool/bin:$PATH                                           # for convenience -> otherwise, just run
+# FINALLY! Here we'll start to compare the samples.
+# -> let's get some Bio into the Informatics!!!
+
+# Good luck!
+# ******************************************************************************
+# 1) Create a read-counts table:
+cd 001_Data/04_AnnotReads/
+# activate sam-tools as before, in case you'd logged out inbetween:
+export PATH=$PWD/../../000_Software/SAMtool/bin:$PATH
+# then, in the Ubuntu (or on the server) command-line run:
 for i in *-transAnnot.sam ; do echo $i; a=${i/\-transAnnot.sam/};
 samtools view $i | awk '$3!="*"{hash[$3]++}END{for(i in hash){print "'$a'\t"i"\t"hash[i]}}' >>transcriptome_counts.txt;
 done;
-
-samtools view $i | awk '$3!="*"{hash[$3]++}END{for(i in hash){print "'$a'\t"i"\t"hash[i]}}' >>count_table.txt; done;
-samtools view $i | awk '$3!="*"{hash[$3]++}END{for(i in hash){print "'$a'\t"i"\t"hash[i]}}' >>transcriptome_counts.txt; done;
-# => creates count_table.txt
+# copy the table to your Windows-machine
 
 
-
-
-
-# 1) Install DESeq2:
-# start R-Studio with R-version > 4.x & type:
-
+# 2) Install DESeq2:
+# First, install R version newer than 4.0
+# in R (I use R-studio for this now):
 if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+install.packages("BiocManager")
+BiocManager::install("DESeq2")                                                  # to read documentation, run (in R): browseVignettes("DESeq2")
 
-BiocManager::install("DESeq2")
 
-# for info: browseVignettes("DESeq2")
+# 3) Find differences between samples:
+# First, open and re-format the table:
+
+
+
+
+# run DESeq2
