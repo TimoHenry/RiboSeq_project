@@ -19,47 +19,30 @@ do ./00_Software/FastQC/fastqc --outdir=./02_IntermOutput/02_cleanQC/ $i;       
 done
 
 
+# 3) download reference genome and transcriptome annotations:
+# 3_1) for reference transcriptome, go to:
+http://www.ensembl.org/biomart/martview/4e9648722de7cb0da23cf319e08eb5e6?VIRTUALSCHEMANAME=default&ATTRIBUTES=scerevisiae_gene_ensembl.default.sequences.ensembl_gene_id|scerevisiae_gene_ensembl.default.sequences.ensembl_transcript_id|scerevisiae_gene_ensembl.default.sequences.coding|scerevisiae_gene_ensembl.default.sequences.external_gene_name|scerevisiae_gene_ensembl.default.sequences.upstream_flank."18"|scerevisiae_gene_ensembl.default.sequences.downstream_flank."18"&FILTERS=scerevisiae_gene_ensembl.default.filters.transcript_biotype."protein_coding"&VISIBLEPANEL=resultspanel
+# copy to 001_Data/03_RefAnnot on Ubuntu or cluster as above
+# 3_2) for reference genome:
+cd /001_Data/03_RefAnnot
+wget --output-document yeastGenome_ref.fa.gz ftp://ftp.ensembl.org/pub/release-101/fasta/saccharomyces_cerevisiae/dna/Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa.gz
+# for gtf of genome, type:
+wget --output-document yeastGenome_refGTF.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.101.gtf.gz
+
+
+
+# 5) prepare indeces for bowtie-mapping:                                        # bowtie-build depends on python3, which cannot be installed on our server. Hence, the indeces must be built on your local machine, and then uploaded to the server for mapping
+
+# 5_2) transcriptome Annotations indexing:
+bowtie-build mart_exportTranscriptome.txt transcriptome
+scp ./transcriptome* trey@binfservms01.unibe.ch:/data/users/trey/RNAseq/01_Data/03_Transcrpt_refAnnot/
+
+# 5_3) genome Annotations indexing:
+bowtie-build Saccharomyces_cerevisiae.R64-1-1.dna.toplevel.fa R64_genome
+scp ./R64_genome* $USER@binfservms01.unibe.ch:/data/users/$USER/RNAseq/01_Data/04_Genome_refAnnot/
+
+
+
+
 
 # ------------------------------------------------------------------------------
-# 05_Quality assessment  -------------------------------------------------------
-# First, convert .sam to .bam list_of_files
-# -> go to SAMtool/bin/, then, for all transcriptome-annotated sam files:
-./samtools view -S -b ../../04_bowtie_transcriptome/SRR19449*-transAnnot.sam > ../../05_BAM_out/SRR19449*_transcriptome.bam
-# for all genome-annotated sam files:
-./samtools view -S -b ../../04_bowtie_transcriptome/SRR19449*-GenAnnot.sam > ../../05_BAM_out/SRR19449*_genome.bam
-# note: -S => expects .sam input (vs. default .bam); -b produces .bam output; default is STDOUT => need '>' operator
-
-# sort genome.bam files:
-./samtools sort ../../05_BAM_out/SRR1944912_genome.bam -o ../../05_BAM_out/SRR1944912_genome.sorted.bam
-
-
-# Then, assess mRNA-reads quality with RiboseQC in R
-# step 1) prepare annotation files:
-#prepare_annotation_files(annotation_directory = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC",                # target directory to contain the output files
-#                         twobit_file = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC\yeastGenome.2bit",
-#                         gtf_file = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC\yeastGenome.gtf", # files to build reference from
-#                         scientific_name = "Saccharomyces.cerevisiae",          # organism
-#                         annotation_name = "yeast_RiboseQC",                    # name to give to annotation used
-#                         export_bed_tables_TxDb = F, forge_BSgenome = T, create_TxDb = T)
-# run the following one-liner:
-prepare_annotation_files(annotation_directory="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC",twobit_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.2bit",gtf_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf",scientific_name="Saccharomyces.cerevisiae",annotation_name="yeast_RiboseQC",export_bed_tables_TxDb=T,forge_BSgenome=T,create_TxDb=T)
-
-load_annotation( 'C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf_Rannot' )
-# From Melina:
-featureCounts -t exon -g gene_id -a Saccharomyces_cerevisiae.R64-1-1.101.gtf   -o counts.txt SRR1944912_genome_sorted.bam SRR1944913_genome_sorted.bam SRR1944914_genome_sorted.bam SRR1944921_genome_sorted.bam SRR1944922_genome_sorted.bam SRR1944923_genome_sorted.bam
-
-# step 2) perform analysis:                                                     # see documentation here: http://127.0.0.1:28535/library/RiboseQC/html/RiboseQC_analysis.html
-# for single sample, in R type:
-bam_filepath <- c("C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944912_genome.sorted.bam")
-bam_names <- c("SRR1944912")
-
-# for multiple samples, in R type:
-bam_filepath <- c("C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944912_genome.sorted.bam",
-"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944913_genome.sorted.bam",
-"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944914_genome.sorted.bam",
-"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944921_genome.sorted.bam",
-"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944922_genome.sorted.bam",
-"C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/SRR1944923_genome.sorted.bam")
-bam_names <- c("SRR1944912","SRR1944913","SRR1944914","SRR1944921","SRR1944922","SRR1944923")
-
-RiboseQC_analysis(annotation_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/yeastGenome.gtf_Rannot", bam_files = bam_filepath, fast_mode = T, report_file="C:/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/allYeast_riboseQC.html", sample_names=bam_names, dest_names=bam_names, write_tmp_files=T)

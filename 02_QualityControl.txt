@@ -5,7 +5,7 @@
 
 # Good luck!
 # ******************************************************************************
-
+# -------------------------- Raw reads QC --------------------------------------
 # 1) Install FastQC:
 # note: jre is pre-installed on our server <- you may need to install this before running FastQC
 cd 000_Software                                                                 # go to directory which will harbour your software for this project
@@ -22,21 +22,23 @@ fastqc --help                                                                   
 #SBATCH --cpus-per-task=2                                                       # Allocate computational resources for the task
 #SBATCH --mem-per-cpu=1000M
 for i in $(ls -d 001_Data/01_fastq_rawSeq/*.fastq);                             # for every .fastq file
-do ./00_Software/FastQC/fastqc --outdir=/02_IntermOutput/01_rawQC/ $i;          # do FastQC analysis save to output-directory
+do ./00_Software/FastQC/fastqc --outdir=/002_IntermOutput/01_rawQC/ $i;          # do FastQC analysis save to output-directory
 done
 
 # execute the script:
 ./yourBASHname.sh                                                               # the '.' tells to look for the file in the current directory. This can be modified to any other location.
 
 
+# --------------------------- Clean reads QC -----------------------------------
 # 3) Quality control of clean sequences:
-# do the same as above, but specify the new input-files -> replace "*.fastq" with
+# do the same as above, but specify the new input-files
+# -> replace "*.fastq" with "*_clean.fastq"
+# -> replace "01_rawQC" with "02_cleanQC"
 
 
-# 4) Quality control of annotations sequences:
-
-
-# 6) install SAM-tools                                                          # more info at http://www.htslib.org/download
+# ---------------------------- Annotation QC -----------------------------------
+# 4) Install SAM-tools:                                                         # more info at http://www.htslib.org/download
+cd 000_Software
 wget --output-document samtools-1.11.tar.bz2 https://sourceforge.net/projects/samtools/files/samtools/1.11/samtools-1.11.tar.bz2/download
 tar -xf samtools-1.11.tar.bz2
 cd samtools-1.11
@@ -44,37 +46,66 @@ mkdir ./../SAMtool
 ./configure --prefix=$PWD/../SAMtool
 make
 make install
-# export PATH=$PWD/../SAMtool/bin:$PATH                                           # for convenience -> otherwise, just run
+# export PATH=$PWD/../SAMtool/bin:$PATH                                         # for convenience -> otherwise, just run
+                                                                                # also, check out: http://quinlanlab.org/tutorials/samtools/samtools.html
 
-# check out: http://quinlanlab.org/tutorials/samtools/samtools.html
+# 5) Convert .sam to .bam
+# convert transcriptome-annotated files:
+cd 001_Data/04_AnnotReads/
+./samtools view -S -b ./SRR19449*-transAnnot.sam > ./SRR19449*_transcriptome.bam
+# convert genome-annotated files:
+./samtools view -S -b ./SRR19449*-GenAnnot.sam > ./SRR19449*_genome.bam
+# note: -S => expects .sam input (vs. default .bam); -b produces .bam output; default is STDOUT => need '>' operator
 
 
+# 6) Sort genome.bam files:
+./samtools sort ./SRR1944912_genome.bam -o ./SRR1944912_genome.sorted.bam
 
-# 7) install Ribo-seQC                                                          # Ribo-seQC is an R-package. R-software must thus be installed and the Ribo-seQC package downloaded.
-#check out: https://htmlpreview.github.io/?https://github.com/lcalviell/Ribo-seQC/blob/master/RiboseQC.html
-# need to install R version < 4.0 -> R v.3.6.3 installed on personal Windows & then run it.
-# install Rtools according to R-version by downloading from here: https://cran.r-project.org/bin/windows/Rtools/history.html
-# check if Rtools is available:
+
+# 7) Install Ribo-seQC:                                                         # also, check out: https://htmlpreview.github.io/?https://github.com/lcalviell/Ribo-seQC/blob/master/RiboseQC.html
+# Ribo-seQC is an R-package. R-software version older than 4.0 must be installed.
+# I installed R v.3.6.3 on Windows then run it from there.
+# Install Rtools according to R-version by downloading from here: https://cran.r-project.org/bin/windows/Rtools/history.html
+# Check if Rtools is available by running the following from the R terminal:
 install.packages("pkgbuild")
 library("pkgbuild")
-find_rtools() # should return TRUE
-
+find_rtools()                                                                   # should return TRUE
+# Install pandoc as described here: https://pandoc.org/installing.html
 # Download RiboseQC library inside R:
 install.packages("devtools")
 library("devtools")
 install_github(repo = "lcalviell/Ribo-seQC")
 library("RiboseQC")
 
-# => 2 steps: 1) ?prepare_annotation_files <- type this in R-terminal & it will direct you to the documentation
-# or, check out: http://127.0.0.1:28535/library/RiboseQC/html/prepare_annotation_files.html
-# for this, will need .gtf file (downloaded above) as well as .2bit as described here: https://genome.ucsc.edu/goldenpath/help/twoBit.html
-# yeast genome .2bit, can be downloaded here: http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/
-wget --output-document yeastGenome.2bit http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.2bit
+# 8) Prepare reference files                                                    # type ?prepare_annotation_files inside R, to view documentation
+# Download .gtf file:                                                           # see https://genome.ucsc.edu/goldenpath/help/twoBit.html
 wget --output-document yeastGenome.gtf.gz ftp://ftp.ensembl.org/pub/release-101/gtf/saccharomyces_cerevisiae/Saccharomyces_cerevisiae.R64-1-1.101.gtf.gz
 gunzip yeastGenome.gtf.gz
+# Download .2bit file:                                                          # note: for me, this file did not work & I had to obtain it from a colleague who built it herself, as in the instructions on the website.
+wget --output-document yeastGenome.2bit http://hgdownload.soe.ucsc.edu/goldenPath/sacCer3/bigZips/sacCer3.2bit
 # copy these files to local Windows machine to use them in R on windows:
-cp yeastGenome.* /mnt/c/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/
-# go to 05_BAM_out directory & copy all sorted.bam files to local computer
-cp *.sorted.bam /mnt/c/Users/timor/Documents/UniFR/HS2020_RNAseq/05_RiboseQC/
+# also copy the sorted .bam files
+cp *.sorted.bam /mnt/c/Users/$USER/Desktop/
+# in R, run (it might take a little while to run):
+prepare_annotation_files(annotation_directory = "C:\Users\timor\Documents\UniFR\HS2020_RNAseq\05_RiboseQC",                # target directory to contain the output files
+twobit_file = "C:/Users/$USER/Desktop/yeastGenome.2bit", gtf_file = "C:/Users/$USER/Desktop/yeastGenome.gtf",
+scientific_name = "Saccharomyces.cerevisiae", annotation_name = "yeast_RiboseQC",
+export_bed_tables_TxDb = T, forge_BSgenome = T, create_TxDb = T)
+# to check out whether it worked, run:
+load_annotation( 'C:/Users/$USER/Desktop/yeastGenome.gtf_Rannot' )
 
-need to install pandoc as described here: https://pandoc.org/installing.html
+
+# 8) Analyse quality of annotated reads                                         # see documentation here: http://127.0.0.1:28535/library/RiboseQC/html/RiboseQC_analysis.html
+# for single sample, in R type:
+bam_filepath <- c("C:/Users/$USER/Desktop/SRR1944912_genome.sorted.bam")
+bam_names <- c("SRR1944912")
+# for multiple samples, in R type:
+bam_filepath <- c("C:/Users/$USER/Desktop/SRR1944912_genome.sorted.bam",
+"C:/Users/$USER/Desktop/SRR1944913_genome.sorted.bam",
+"C:/Users/$USER/Desktop/SRR1944914_genome.sorted.bam",
+"C:/Users/$USER/Desktop/SRR1944921_genome.sorted.bam",
+"C:/Users/$USER/Desktop/SRR1944922_genome.sorted.bam",
+"C:/Users/$USER/Desktop/SRR1944923_genome.sorted.bam")
+bam_names <- c("SRR1944912","SRR1944913","SRR1944914","SRR1944921","SRR1944922","SRR1944923")
+# then run:
+RiboseQC_analysis(annotation_file="C:/Users/$USER/Desktop/yeastGenome.gtf_Rannot", bam_files = bam_filepath, fast_mode = T, report_file="C:/Users/$USER/Desktop/allYeast_riboseQC.html", sample_names=bam_names, dest_names=bam_names, write_tmp_files=T)
