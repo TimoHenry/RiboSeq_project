@@ -21,7 +21,7 @@ bowtie -p 4 RNA_index SRR1944912.fastq --un SRR1944912_no_RNA.fastq 2> my_errors
 #SBATCH --mem-per-cpu=1000M
 # in RNAseq:
 for i in $(ls -d 01_Data/03_bowtie_out/*.fq);
-do ./00_Software/FastQC/fastqc --outdir=./02_IntermOutput/02_cleanQC/ $i;          # do FastQC analysis for each file & save to output-directory
+do ./000_Software/FastQC/fastqc --outdir=./02_IntermOutput/02_cleanQC/ $i;          # do FastQC analysis for each file & save to output-directory
 done
 
 

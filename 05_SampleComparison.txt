@@ -24,10 +24,39 @@ install.packages("BiocManager")
 BiocManager::install("DESeq2")                                                  # to read documentation, run (in R): browseVignettes("DESeq2")
 
 
+# NOTE: all following could also be written into 1 R-script and executed automatically
 # 3) Find differences between samples:
-# First, open and re-format the table:
+# First, load and re-format the counts table:
+countsTab <- read.table('C:/Users/timor/Downloads/transcriptome_counts.txt', header=FALSE, sep='\t')
+countsDF <- as.data.frame(countsTab)
+colnames(countsDF) <- c("sample", "gene", "reads")
+myCounts <- xtabs(reads ~gene + sample, countsDF)
+# Also make a table with your layout for analysis:
+samples <- factor(c("SRR1944912","SRR1944913","SRR1944914", "SRR1944921", "SRR1944922", "SRR1944923")) # list of samples
+conditions <- factor(c(rep("WT", 3), rep("elp6_ncs2", 3)))                      # list of conditions
+myConditions <- data.frame(row.names = samples, condition = conditions)         # which is which
+# Load your data into DESeq:
+library('DESeq2')
+dds <- DESeqDataSetFromMatrix(countData = myCounts, colData = myConditions, design = ~ condition)
+dds <- dds[rowSums(counts(dds))>10]                                             # use a lower-bounds threshold
+dds$condition <- relevel(dds$condition, ref = "WT")                             # make sure use correct reference
+# Run DESeq2:
+dds <- DESeq(dds)
+resultsNames(dds)                                                               # <- check out this output and enter it below
+# => for me, this outputs: "condition_elp6_ncs2_vs_WT"
+res <- results(dds, name="condition_elp6_ncs2_vs_WT")
 
+# 4) Inspect output:
+summary(res)                                                                    # returns an overview of results
+# Optionally, order results according to p-value: resOrdered <- res[order(res$pvalue),]
+# plot the log-fold-changes:
+plotMA(res, ylim=c(-2,2))
+# plot individual genes:
+plotCounts(dds, gene=which.min(res$log2FoldChange), intgroup="condition")       # for instance the one with the smallest lfc
+# PCA-plot:
+vsd <- vst(dds, blind=FALSE)
+plotPCA(vsd, intgroup=c("condition"))
 
-
-
-# run DESeq2
+resSig <- subset(resOrdered, padj < 0.1)                                        # keep only results that pass adjusted-p-value filtering
+# Save output as .csv table
+write.table(resSig, file='remaining.csv')
