@@ -5,7 +5,8 @@
 # Good luck!
 # ******************************************************************************
 # 1) Create two lists of genes for mutant vs. WT:
-countsTab <- read.table('C:/Users/timor/Downloads/transcriptome_counts.txt', header=FALSE, sep='\t')
+# The following commands can be typed into R or copy pasted into an R-script.
+countsTab <- read.table('C:/Users/$USER/Downloads/transcriptome_counts.txt', header=FALSE, sep='\t')
 countsDF <- as.data.frame(countsTab)
 colnames(countsDF) <- c("sample", "gene", "reads")
 
@@ -20,17 +21,19 @@ GOdf$genes <- sub(".*mRNA\\|", "", GOdf$hits)
 #GOdf$genes <- sub(".*mRNA", "", GOdf$hits)
 #GOdf$genes <- sub(".*\\|", "", GOdf$genes)
 
-# drop all unnecessary columns
+# drop all unnecessary columns:
 toGOdf <- subset(GOdf, select=c(WT,mutant,genes))
 toGOdf <- data.frame(toGOdf, row.names = NULL)
 goWT <- subset(toGOdf, select=c(WT,genes))
 goWT <- goWT[(goWT$WT>0),]
-write.table(goWT, file='C:/Users/timor/Documents/UniFR/HS2020_RNAseq/WTtoGO.csv')
+write.table(goWT, file='C:/Users/$USER/Desktop/WTtoGO.csv')
 
 goMut <- subset(toGOdf, select=c(mutant,genes))
 goMut <- goMut[(goMut$mutant>0),]
-write.table(goMut, file='C:/Users/timor/Documents/UniFR/HS2020_RNAseq/MutanttoGO.csv')
+write.table(goMut, file='C:/Users/$USER/Desktop/MutanttoGO.csv')
 
 
 # 2) Use GOrilla to analyse these lists:
 http://cbl-gorilla.cs.technion.ac.il/
+# copy-paste the gene-names from the two lists into the respective fields and run analysis.
+# inspect results.
