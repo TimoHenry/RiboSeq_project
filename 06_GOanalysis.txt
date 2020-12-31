@@ -1,0 +1,10 @@
+# December 2020, Timo Rey, UniFR - Switzerland
+
+# And, for the last round, some GOrillas go ApE.
+
+# Good luck!
+# ******************************************************************************
+# 1) Create two lists of genes for mutant vs. WT:
+
+
+# 2) Use GOrilla to analyse these lists

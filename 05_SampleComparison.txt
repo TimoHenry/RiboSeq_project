@@ -60,3 +60,6 @@ plotPCA(vsd, intgroup=c("condition"))
 resSig <- subset(resOrdered, padj < 0.1)                                        # keep only results that pass adjusted-p-value filtering
 # Save output as .csv table
 write.table(resSig, file='remaining.csv')
+
+norm <- estimateSizeFactors(dds)
+write.table(counts(norm), "RPF_normalized.csv", col.names=T, sep=",")
