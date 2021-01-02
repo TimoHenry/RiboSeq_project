@@ -32,7 +32,7 @@ done
 # --------------------------- Clean reads QC -----------------------------------
 # 3) Quality control of clean sequences:
 # do the same as above, but specify the new input-files
-# -> replace "*.fastq" with "*_clean.fastq"
+# -> replace "*.fastq" with "*_clean.fq"
 # -> replace "01_rawQC" with "02_cleanQC"
 
 

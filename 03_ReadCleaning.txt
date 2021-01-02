@@ -5,7 +5,6 @@
 
 # Good luck!
 # ******************************************************************************
-
 # 1) Install bowtie:
 # note: bowtie requires Python3, which, as a student, I had no right to install on our cluster. Therefore, I now moved everything to my local Ubuntu VM.
 cd 000_Software                                                                 # go to directory which will harbour your software for this project
@@ -31,6 +30,7 @@ wget --output-document tRNA_Refs.fa http://gtrnadb.ucsc.edu/genomes/eukaryota/Sc
 cd /001_Data/02_rtsRNA_refSeq
 cp /mnt/c/Users/$USER/Downloads/all_undesiredRNA_Refs.txt .                     # replace $USER with your username
 
+
 # 3) Index uninteresting RNA-species
 bowtie-build all_undesiredRNA_Refs.txt all_undesiredRNA_Refs                    # this will create 6 .ebwt files
 
@@ -40,5 +40,5 @@ bowtie-build all_undesiredRNA_Refs.txt all_undesiredRNA_Refs                    
 #SBATCH --cpus-per-task=4
 #SBATCH --mem-per-cpu=80000M
 for i in $(ls -d 001_Data/01_fastq_rawSeq/*.fastq);
-do bowtie -t 4N ./all_undesiredRNA_Refs $i --un *_clean.fastq 2>> logfile.txt;
+do bowtie -t 4N ./all_undesiredRNA_Refs $i --un *_clean.fq 2>> logfile.txt;
 done
