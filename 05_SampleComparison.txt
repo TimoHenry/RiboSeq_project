@@ -18,7 +18,7 @@ done;
 
 # 2) Install DESeq2:
 # First, install R version newer than 4.0
-# in R (I use R-studio for this now):
+# in R (I use R-studio for this), type:
 if (!requireNamespace("BiocManager", quietly = TRUE))
 install.packages("BiocManager")
 BiocManager::install("DESeq2")                                                  # to read documentation, run (in R): browseVignettes("DESeq2")
@@ -54,12 +54,14 @@ plotMA(res, ylim=c(-2,2))
 # plot individual genes:
 plotCounts(dds, gene=which.min(res$log2FoldChange), intgroup="condition")       # for instance the one with the smallest lfc
 # PCA-plot:
-vsd <- vst(dds, blind=FALSE)
+vsd <- vst(dds, blind=FALSE)                                                    # normalise
 plotPCA(vsd, intgroup=c("condition"))
 
+# 5) Process results:
 resSig <- subset(resOrdered, padj < 0.1)                                        # keep only results that pass adjusted-p-value filtering
+resFilt <- results(dds, lfcThreshold = 1.5, altHypothesis="greaterAbs", alpha = 0.1) # Or: filter with padj and lfcThreshold
 # Save output as .csv table
 write.table(resSig, file='remaining.csv')
 
 norm <- estimateSizeFactors(dds)
-write.table(counts(norm), "RPF_normalized.csv", col.names=T, sep=",")
+write.table(counts(norm), "yeast_riboProfile_normalized.csv", col.names=T, sep=",")
